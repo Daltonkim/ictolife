@@ -1,0 +1,21 @@
+/*
+ * BREAKPOINTS
+ */
+$breakpoints: (
+  'small': 768px,
+  'medium': 992px,
+  'large': 1200px,
+  'extra-large': 1900px,
+) !default;
+
+/*
+   * COLORS
+   */
+
+$primary: #ff0040;
+$secondary: #6b911b;
+$accent: #819a20;
+
+// Custom Scroll(Perfect Scrollbar)
+$custom-scrollbar-size:                             4px !default;
+$custom-scrollbar-color:                            $primary !default;
