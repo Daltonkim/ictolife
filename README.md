@@ -1,10 +1,3 @@
-# 
-
-
-If you have any questions, please send us an email, we'll get back to you as soon as possible. 
-
-The task will take approximately two hours to complete, but you have two days to submit it.
-
 ## Installation & Running
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
