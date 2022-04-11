@@ -1,9 +1,9 @@
 import { memo, useCallback, useEffect, useMemo, useState } from 'react'
-import { debounce } from 'lodash'
+import { debounce, isEmpty } from 'lodash'
 import { MemoizedpostContainer } from '../components/postContainer/index'
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux'
-import { getAllPosts, getAllUsers } from './_redux/postsActions'
-import { User } from '../data/interfaces'
+import { getAllUsers } from './_redux/postsActions'
+import { AddPostForm } from '../components/form/form'
 
 const Main = () => {
   const [search, setSearch] = useState<string>('')
@@ -26,13 +26,13 @@ const Main = () => {
   const debouncedSearch = useMemo(
     () =>
       debounce((val: string) => {
-        if (val.trim().length === 0) {
+        if (isEmpty(val)) {
           setContent(posts)
         } else {
           setSearchable(val)
-          const searched = content?.filter((item: { title: string }) => item?.title?.toLowerCase().includes(val.toLowerCase()))
-          console.log(searched)
-          setContent(searched)
+          const getUser = users.filter((item: { company: { name: string } }) => item.company.name.toLowerCase().includes(val.toLowerCase()))
+          const output = posts.filter((x: any) => getUser.find((y: { id: any;}) => (y.id === x.userId)))
+          setContent(output)
         }
       }, 1000),
     [dispatch]
@@ -46,9 +46,9 @@ const Main = () => {
     [debouncedSearch]
   )
 
-  const submit = (e: { preventDefault: () => void }) => {
-    e.preventDefault()
-    // dispatch()
+  const reset = () => {
+    setSearch('')
+    setContent(posts)
   }
 
   return (
@@ -60,28 +60,13 @@ const Main = () => {
             value={search}
             onChange={handleChange}
           />
-          <input value='reset' type="reset"></input>
+          <button onClick={reset} className='outlined' value='reset' type="reset">Reset</button>
         </form>
       </div>
       <div className="app__containers">
-        <MemoizedpostContainer listLoading={listLoading} actionsLoading={actionsLoading} posts={posts} search={searchable}></MemoizedpostContainer>
+        <MemoizedpostContainer listLoading={listLoading} actionsLoading={actionsLoading} posts={content} search={searchable}></MemoizedpostContainer>
       </div>
-      <div className="app__addpost">
-        <div className="app__addpostselect">
-          <select name="user" id="user">
-            <option value="">Select current user</option>
-            {users.map((item: User) => (
-              <option key={item.id} value={item.id}>{item.name}</option>
-            ))}
-          </select>
-        </div>
-        <div className="app__addposttexarea">
-          <form onSubmit={submit}>
-            <textarea placeholder='Type body of post here...'></textarea>
-            <input value="submit" type="submit"></input>
-          </form>
-        </div>
-      </div>
+      <AddPostForm/>
     </div>
   )
 }

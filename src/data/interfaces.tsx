@@ -1,8 +1,8 @@
 export type Post = {
-  userId?: string,
-  id?: string;
+  userId: number,
+  id?: number;
   title: string;
-  body: number;
+  body: string;
 };
 
 export type User = {
@@ -16,9 +16,11 @@ export type User = {
 
 export type ReduxData = {
   actionsLoading?: boolean;
-  range: {},
+  newPostIndex?: any,
+  page: number;
   users: User[];
+  userId?: number;
   error?: any;
-  posts?: Post[],
+  posts: Post[],
   listLoading?: boolean;
 };

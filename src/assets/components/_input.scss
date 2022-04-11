@@ -1,0 +1,29 @@
+input {
+    border-radius: 20px;
+    border: 1px solid purple;
+    padding: 5px 10px;
+
+    &:focus {
+        border: 1.2px solid purple;
+    }
+
+    &:focus-visible {
+        border: 1.2px solid purple;
+    }
+
+    &:focus-visible {
+        border: 2px solid purple;
+    }
+}
+
+select {
+    border-radius: 20px;
+    border: 1px solid purple;
+    padding: 5px 10px;
+}
+
+textarea {
+    border-radius: 20px;
+    border: 1px solid purple;
+    padding: 5px 10px;
+}

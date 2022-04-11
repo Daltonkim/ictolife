@@ -1,61 +1,83 @@
 .post {
   position: relative;
   background-color: #64c86420;
-  display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
   border-radius: 20px;
-  margin: 10px;
-  align-items: center;
-
-  &-image {
-    text-align: left;
-    width: 40%;
-    border-radius: 21px;
-    padding: 98px 0;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-
-    @media (max-width: 767px) {
-      width: 50%;
-      padding: 19px;
-      height: 40px
-    }
-
-    img {
-      width: 55%;
-      vertical-align: middle;
-      border-radius: 0px 20px 0;
+  align-items: self-start;
+  text-align: left;
+  cursor: pointer;
+  @media (max-width: 767px) {
+   margin: 25px;
+  }
+  background-color: $secondary;
+  &:hover{
+    background-color: $primary;
+    color: $white;
+  }
+  &-container {
+    &__main {
+      position: relative;
+      border-radius: 10px;
+      width: 100%;
+      align-items: center;
+      text-align: center;
     }
   }
 
+  &:hover > .post-floatinactions {
+    display:flex;
+  }
   &-title {
     font-weight: bold;
-    font-size: 20px;
-    padding: 10px;
+    font-size: 16px;
+    padding: 0px 20px 0;
+
+    @media (max-width: 767px) {
+      font-weight: bold;
+      font-size: 14px;
+      
+    }
+  }
+
+  &-body {
+    font-size: 16px;
+    padding: 0 20px 10px;
 
     @media (max-width: 767px) {
       font-weight: bold;
       font-size: 10px;
-      padding: 0 10px;
     }
   }
 
-  &-release {
-    font-size: 14px;
-    font-weight: 800;
+  &-floatinactions {
+    display: none;
+    position: absolute;
+    justify-content: space-between ;
+    right: 0;
+    top: 0;
+    padding: 20px;
+
+    > button {
+      margin-right: 10px;
+    }
 
     @media (max-width: 767px) {
-      margin-top: 22px;
-      padding: 0 10px 10px 0;
+      font-weight: bold;
       font-size: 10px;
+      right: 0;
+      padding: 10px 20px;
+    }
+  }
+
+  &-user {
+    font-size: 14px;
+    font-weight: 800;
+    padding: 20px;
+
+    @media (max-width: 767px) {
       display: block;
       font-weight: 800;
-    }
-    &-date{
-      @media (max-width: 767px) {
-      font-size: 7px;
-      }
+      padding: 20px 20px 10px;
     }
   }
 }

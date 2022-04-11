@@ -1,0 +1,80 @@
+.app {
+  position: relative;
+  width: 40%;
+  margin: auto;
+  padding: 10px 0;
+  border-radius: 10px;
+  font-family: 'Open Sans', sans-serif;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    padding: 10px 10px;
+  }
+
+  &__addposttexarea {
+    display: flex;
+    margin: 10px 0;
+    align-items: center;
+    justify-content: space-between;
+
+    @media (max-width: 767px) {
+      flex-direction: column;
+      padding: 10px 10px;
+      align-items: center;
+    }
+
+    textarea {
+      width: 70%;
+      padding: 10px;
+
+      @media (max-width: 767px) {
+        margin-bottom: 10px;
+      }
+    }
+  }
+
+  &__addpostselect {
+
+    @media (max-width: 767px) {
+      flex-direction: column;
+      padding: 20px 10px 0;
+      text-align: center;
+    }
+
+    select {
+      width: 70%;
+      padding: 10px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    width: 100%;
+    box-shadow: none;
+  }
+
+  &__input {
+    padding: 10px;
+
+    >form {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      @media (max-width: 767px) {
+        width: 70%;
+        text-align: center;
+      }
+    }
+
+
+  }
+
+  &__containers {
+    display: block;
+    margin: auto;
+    width: 100%;
+    padding: 10px 0;
+    justify-content: space-between;
+
+  }
+}

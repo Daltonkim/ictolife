@@ -1,8 +1,8 @@
-import React, { memo, useEffect, useRef, useState } from 'react'
-import PerfectScrollbar from 'react-perfect-scrollbar'
+import React, { memo, useEffect, useRef, useState, useCallback } from 'react'
+import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized'
 import { Post } from '../../data/interfaces'
 import { MemoizedCard } from '../card'
-import { addPost, getAllPosts, setRange } from '../../modules/_redux/postsActions'
+import { addPost, getAllPosts } from '../../modules/_redux/postsActions'
 import { RootStateOrAny, useDispatch, useSelector } from 'react-redux'
 
 export const PostContainer = (props: any) => {
@@ -11,106 +11,107 @@ export const PostContainer = (props: any) => {
     wheelPropagation: false
   }
   const dispatch = useDispatch()
-  const { range } = useSelector((state: RootStateOrAny) => state.posts)
+  const { listLoading, actionsLoading, posts } = props
+  const { newPostIndex } = useSelector((state: RootStateOrAny) => state.posts)
 
   const [isLoading, setIsLoading] = useState(true)
+  const [pageNumber, setPageNumber] = useState(1)
+
   const [isFirstLoad, setIsFirstLoad] = useState(true)
-  const [st, setNewRange] = useState([0, 20])
-
-  const [error, setError] = useState(null)
-  const [targetElement, setTargetElement] = useState(null)
-  const prevY = useRef(0) // storing the last intersection y position
-
-  const options = {
-    root: null,
-    rootMargin: '0px',
-    threshold: 1.0
-  }
-
-  // useEffect(() => {
-  //   // get all posts
-  //   console.log(range)
-  //   setNewRange(range)
-  //   console.log(st)
-  // }, [range])
-
-  console.log(st)
-
-  const handleObserver = (entities: any, observer: any) => {
-    const y = entities[0].boundingClientRect.y
-    if (prevY.current > y) {
-      const arr = Array.from(st, x => x + 20)
-
-      console.log(st)
-      setNewRange(arr)
-      console.log('lets fetch again')
-      console.log(st)
-
-      fetchI(range[0], range[1])
-      dispatch(setRange(range[0], range[1]))
-    }
-
-    prevY.current = y
-    const arr = Array.from(st, x => x + 20)
-    console.log(arr)
-  }
+  const [scrollIndex, setScroll] = useState(undefined)
 
   useEffect(() => {
-    // get all posts
-    fetchI(range[0], range[1])
-  }, [dispatch])
+    setScroll(newPostIndex)
+  }, [newPostIndex])
 
-  const fetchI = (start: number, end: number) => {
-    dispatch(getAllPosts(start, end))
+  const [error, setError] = useState(null)
+  const prevY = useRef(0) // storing the last intersection y position
+
+  const observer: any = useRef()
+
+  const setTargetElement = useCallback((node) => {
+    if (observer.current) observer.current.disconnect()
+
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting) {
+        setPageNumber(prevState => {
+          return prevState + 1
+        })
+      }
+    })
+    if (node) observer.current.observe(node)
+  }, [])
+
+  const cache = useRef(new CellMeasurerCache({
+    fixedWidth: true,
+    defaultHeight: 200
+  }))
+
+  useEffect(() => {
+    // get all posts the data amounts to 100
+    if (pageNumber < 6) {
+      fetchI(pageNumber)
+    }
+  }, [dispatch, pageNumber])
+
+  const fetchI = (val: number) => {
+    dispatch(getAllPosts(val))
     setIsFirstLoad(false)
     setIsLoading(false)
   }
 
-  useEffect(() => {
-    if (targetElement) {
-      observer.current.observe(targetElement)
-    }
-  }, [targetElement])
-
-  const observer = useRef(new IntersectionObserver(handleObserver, options))
-
-  const { posts, listLoading, actionsLoading } = props
-
   return (
     <div className="post-container__main">
-
-          <PerfectScrollbar
-            options={perfectScrollbarOptions}
-            className="scroll pr-7 mr-n7"
-            style={{ maxHeight: '80vh', position: 'relative' }}
-          >
-            {isFirstLoad
+      {isFirstLoad
+        ? (
+          <p></p>
+          )
+        : (
+          <>
+            {posts.length
               ? (
-                <p>;load</p>
+                <div style={{ width: '100%', height: '80vh' }}>
+                  <AutoSizer>
+                    {({ width, height }) => (
+                      <List
+                      width={width}
+                      scrollToIndex={scrollIndex}
+                      height={height}
+                      deferredMeasurementCache={cache.current} rowHeight={cache.current.rowHeight} rowCount={posts.length}
+                        rowRenderer={({ key, index, style, parent }): any => {
+                          const post = posts[index]
+                          if (posts.length === index + 1) {
+                            return (
+                            <CellMeasurer columnIndex={0} rowIndex={index} key={key} cache={cache.current} parent={parent}>
+                              <div style={style} ref={setTargetElement}>
+                                <MemoizedCard index={index} key={post.id} loader={actionsLoading} left={true} act={() => addPost(post)} post={post}></MemoizedCard>
+                              </div>
+                            </CellMeasurer>
+                            )
+                          } else {
+                            return (
+                              <CellMeasurer columnIndex={0} rowIndex={index} key={key} cache={cache.current} parent={parent}>
+                              <div style={style}>
+                                <MemoizedCard index={index} key={post.id} loader={actionsLoading} left={true} act={() => addPost(post)} post={post}></MemoizedCard>
+                              </div>
+                            </CellMeasurer>
+                            )
+                          }
+                        }}
+                      />
+                    )}
+                  </AutoSizer>
+                </div>
                 )
-              : (
-                <>
-                  {posts.length
-                    ? (
-                      <>
-                        {posts.map((post: Post, index: number) => {
-                          return <MemoizedCard index={index} key={post.id} loader={actionsLoading} left={true} act={() => addPost(post)} post={post}></MemoizedCard>
-                        })}
-                      </>
-                      )
-                    : null}
-                </>
-                )}
+              : null}
+          </>
+          )}
 
-            <p style={{ display: `${isLoading ? 'none' : ''}` }}
-              ref={setTargetElement as unknown as React.RefObject<HTMLDivElement>} className="loading-new-images">Loading New Images ...</p>
-            {(posts.length === 0) && (
-              <div>
-                <p>No data</p>
-              </div>
-            )}
-          </PerfectScrollbar>
-
+      {(posts.length === 0 && !actionsLoading) && (
+        <div>
+          <p>No data</p>
+        </div>
+      )}
     </div>
   )
 }
